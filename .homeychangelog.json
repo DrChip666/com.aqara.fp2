@@ -2,5 +2,8 @@
   "1.0.0": {
     "en": "First release: local presence detection with a status per zone, light level, and Flow cards for zones.",
     "da": "Første udgivelse: lokal registrering af tilstedeværelse med status pr. zone, lysniveau og Flow-kort til zoner."
+  },
+  "1.0.1": {
+    "en": "New images and icons"
   }
 }
