@@ -1,0 +1,87 @@
+{
+  "triggers": [
+    {
+      "id": "zone_occupied",
+      "title": {
+        "en": "Presence detected in a zone",
+        "da": "Tilstedeværelse registreret i en zone"
+      },
+      "titleFormatted": {
+        "en": "Presence detected in [[zone]]",
+        "da": "Tilstedeværelse registreret i [[zone]]"
+      },
+      "hint": {
+        "en": "Zones are the detection areas you set up in the Aqara Home app.",
+        "da": "Zoner er de registreringsområder, du har oprettet i Aqara Home-appen."
+      },
+      "args": [
+        {
+          "name": "zone",
+          "type": "autocomplete",
+          "title": { "en": "Zone", "da": "Zone" },
+          "placeholder": { "en": "Choose a zone", "da": "Vælg en zone" }
+        }
+      ],
+      "tokens": [
+        {
+          "name": "zone",
+          "type": "string",
+          "title": { "en": "Zone", "da": "Zone" },
+          "example": { "en": "Sofa", "da": "Sofa" }
+        }
+      ]
+    },
+    {
+      "id": "zone_vacant",
+      "title": {
+        "en": "A zone became empty",
+        "da": "En zone blev tom"
+      },
+      "titleFormatted": {
+        "en": "[[zone]] became empty",
+        "da": "[[zone]] blev tom"
+      },
+      "hint": {
+        "en": "Zones are the detection areas you set up in the Aqara Home app.",
+        "da": "Zoner er de registreringsområder, du har oprettet i Aqara Home-appen."
+      },
+      "args": [
+        {
+          "name": "zone",
+          "type": "autocomplete",
+          "title": { "en": "Zone", "da": "Zone" },
+          "placeholder": { "en": "Choose a zone", "da": "Vælg en zone" }
+        }
+      ],
+      "tokens": [
+        {
+          "name": "zone",
+          "type": "string",
+          "title": { "en": "Zone", "da": "Zone" },
+          "example": { "en": "Sofa", "da": "Sofa" }
+        }
+      ]
+    }
+  ],
+  "conditions": [
+    {
+      "id": "zone_is_occupied",
+      "title": {
+        "en": "Someone !{{is|isn't}} in a zone",
+        "da": "Der er !{{nogen|ingen}} i en zone"
+      },
+      "titleFormatted": {
+        "en": "Someone !{{is|isn't}} in [[zone]]",
+        "da": "Der er !{{nogen|ingen}} i [[zone]]"
+      },
+      "args": [
+        {
+          "name": "zone",
+          "type": "autocomplete",
+          "title": { "en": "Zone", "da": "Zone" },
+          "placeholder": { "en": "Choose a zone", "da": "Vælg en zone" }
+        }
+      ]
+    }
+  ]
+}

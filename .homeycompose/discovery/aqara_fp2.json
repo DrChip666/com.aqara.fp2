@@ -1,0 +1,16 @@
+{
+  "type": "mdns-sd",
+  "mdns-sd": {
+    "name": "hap",
+    "protocol": "tcp"
+  },
+  "id": "{{txt.id}}",
+  "conditions": [
+    [
+      { "field": "txt.md", "match": { "type": "regex", "value": "FP2|PS-S02" } }
+    ],
+    [
+      { "field": "name", "match": { "type": "regex", "value": "FP2" } }
+    ]
+  ]
+}

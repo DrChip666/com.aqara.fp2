@@ -1,0 +1,75 @@
+{
+  "name": {
+    "en": "Presence Sensor FP2",
+    "da": "Tilstedeværelsessensor FP2"
+  },
+  "class": "sensor",
+  "capabilities": ["alarm_motion", "measure_luminance"],
+  "capabilitiesOptions": {
+    "alarm_motion": {
+      "title": { "en": "Presence", "da": "Tilstedeværelse" },
+      "insightsTitleTrue": { "en": "Presence detected", "da": "Tilstedeværelse registreret" },
+      "insightsTitleFalse": { "en": "Room empty", "da": "Rummet er tomt" }
+    }
+  },
+  "platforms": ["local"],
+  "connectivity": ["lan"],
+  "discovery": "aqara_fp2",
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+  },
+  "pair": [
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "options": { "singular": true },
+      "navigation": { "next": "pincode" }
+    },
+    {
+      "id": "pincode",
+      "template": "pincode",
+      "options": {
+        "title": {
+          "en": "Enter the HomeKit code",
+          "da": "Indtast HomeKit-koden"
+        },
+        "hint": {
+          "en": "Enter the 8-digit code printed above the QR code on the FP2. If the FP2 is in Apple Home, remove it there first and restart the FP2.",
+          "da": "Indtast den 8-cifrede kode, der står over QR-koden på FP2. Hvis FP2 er i Apple Home, så fjern den der først og genstart FP2."
+        },
+        "type": "number",
+        "length": 8
+      },
+      "navigation": { "prev": "list_devices", "next": "add_devices" }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ],
+  "repair": [
+    {
+      "id": "pincode",
+      "template": "pincode",
+      "options": {
+        "title": {
+          "en": "Pair the FP2 again",
+          "da": "Par FP2 igen"
+        },
+        "hint": {
+          "en": "Enter the 8-digit HomeKit code from the FP2. If pairing is refused, reset the FP2's HomeKit connection in the Aqara Home app first.",
+          "da": "Indtast den 8-cifrede HomeKit-kode fra FP2. Hvis parringen afvises, så nulstil FP2's HomeKit-forbindelse i Aqara Home-appen først."
+        },
+        "type": "number",
+        "length": 8
+      },
+      "navigation": { "next": "done" }
+    },
+    {
+      "id": "done",
+      "template": "done"
+    }
+  ]
+}

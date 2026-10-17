@@ -1,0 +1,13 @@
+{
+  "name": "com.aqara.fp2",
+  "version": "1.0.0",
+  "private": true,
+  "main": "app.js",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "hap-controller": "0.10.2"
+  },
+  "overrides": {
+    "@stoprocent/noble": "file:./lib/noble-stub"
+  }
+}

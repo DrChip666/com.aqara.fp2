@@ -1,0 +1,16 @@
+{
+  "error": {
+    "invalid_code": "HomeKit-koden skal være på 8 cifre.",
+    "wrong_code": "HomeKit-koden er forkert. Tjek den 8-cifrede kode over QR-koden på FP2.",
+    "already_paired": "Denne FP2 er allerede forbundet til en anden HomeKit-styring, f.eks. Apple Home. Fjern den i Apple Home-appen, genstart FP2 og prøv igen.",
+    "busy": "FP2 er optaget af et andet parringsforsøg. Vent et minut og prøv igen.",
+    "max_tries": "FP2 afviser parring efter for mange forkerte koder. Genstart FP2 og prøv igen.",
+    "pairing_failed": "Parringen med FP2 mislykkedes. Sørg for, at den har strøm og er på samme netværk som Homey, og prøv igen.",
+    "not_found": "FP2 kan ikke findes på netværket. Sørg for, at den har strøm og er på samme netværk som Homey.",
+    "not_paired": "FP2 accepterer ikke længere Homey. Brug Reparer til at indtaste HomeKit-koden igen.",
+    "unreachable": "FP2 svarer ikke. Tjek, at den har strøm og er forbundet til Wi-Fi.",
+    "reconnecting": "Forbindelsen til FP2 blev afbrudt. Forbinder igen…",
+    "zone_missing": "Denne zone findes ikke længere på FP2. Vælg en anden zone i Flowet.",
+    "not_ready": "FP2 tager ikke imod forbindelser lige nu. Hvis du lige har genstartet den, så vent et minut, luk dette vindue og start tilføjelsen forfra."
+  }
+}

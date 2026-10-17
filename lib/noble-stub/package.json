@@ -1,0 +1,7 @@
+{
+  "name": "@stoprocent/noble",
+  "version": "1.15.1",
+  "description": "Empty stand-in for the Bluetooth module of hap-controller. This app only uses HomeKit over IP, and the real module needs a native build that does not work on Homey.",
+  "main": "index.js",
+  "license": "MIT"
+}

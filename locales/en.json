@@ -1,0 +1,16 @@
+{
+  "error": {
+    "invalid_code": "The HomeKit code must be 8 digits.",
+    "wrong_code": "The HomeKit code is not correct. Check the 8-digit code printed above the QR code on the FP2.",
+    "already_paired": "This FP2 is already connected to another HomeKit controller, such as Apple Home. Remove it in the Apple Home app, restart the FP2 and try again.",
+    "busy": "The FP2 is busy with another pairing attempt. Wait a minute and try again.",
+    "max_tries": "The FP2 refused pairing after too many wrong codes. Restart the FP2 and try again.",
+    "pairing_failed": "Pairing with the FP2 failed. Make sure it is powered and on the same network as Homey, then try again.",
+    "not_found": "The FP2 cannot be found on the network. Make sure it is powered and on the same network as Homey.",
+    "not_paired": "The FP2 no longer accepts Homey. Use Repair to enter the HomeKit code again.",
+    "unreachable": "The FP2 does not respond. Check that it is powered and connected to Wi-Fi.",
+    "reconnecting": "Connection to the FP2 was lost. Reconnecting…",
+    "zone_missing": "This zone no longer exists on the FP2. Choose another zone in the Flow.",
+    "not_ready": "The FP2 is not accepting connections right now. If you just restarted it, wait a minute, close this window and start adding the device again."
+  }
+}

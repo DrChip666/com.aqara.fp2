@@ -1,0 +1,76 @@
+{
+  "id": "com.aqara.fp2",
+  "version": "1.0.0",
+  "compatibility": ">=12.9.0",
+  "sdk": 3,
+  "runtime": "nodejs",
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Aqara FP2 - Solo",
+    "da": "Aqara FP2 - Solo"
+  },
+  "description": {
+    "en": "Know exactly where in the room someone is",
+    "da": "Ved præcis hvor i rummet der er nogen"
+  },
+  "category": [
+    "security"
+  ],
+  "tags": {
+    "en": [
+      "aqara",
+      "fp2",
+      "presence",
+      "mmwave",
+      "occupancy",
+      "zones",
+      "radar",
+      "homekit"
+    ],
+    "da": [
+      "aqara",
+      "fp2",
+      "tilstedeværelse",
+      "mmwave",
+      "zoner",
+      "radar",
+      "homekit",
+      "sensor"
+    ]
+  },
+  "brandColor": "#2B3A4A",
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Morten B."
+  },
+  "support": "https://github.com/DrChip666/com.aqara.fp2/issues",
+  "homeyCommunityTopicId": 161012,
+  "source": "https://github.com/DrChip666/com.aqara.fp2",
+  "bugs": {
+    "url": "https://github.com/DrChip666/com.aqara.fp2/issues"
+  },
+  "contributors": {
+    "developers": [
+      {
+        "name": "Morten B."
+      },
+      {
+        "name": "Claude (Anthropic), AI coding assistant"
+      }
+    ]
+  },
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "MortenBech241"
+      }
+    }
+  }
+}
