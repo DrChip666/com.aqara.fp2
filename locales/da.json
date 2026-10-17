@@ -7,12 +7,11 @@
     "max_tries": "FP2 afviser parring efter for mange forkerte koder. Genstart FP2 og prøv igen.",
     "pairing_failed": "Parringen med FP2 mislykkedes. Sørg for, at den har strøm og er på samme netværk som Homey, og prøv igen.",
     "not_found": "FP2 kan ikke findes på netværket. Sørg for, at den har strøm og er på samme netværk som Homey.",
-    "not_paired": "FP2 accepterer ikke længere Homey. Brug Reparer til at indtaste HomeKit-koden igen.",
+    "not_paired": "FP2 accepterer ikke længere Homey. Brug Reparer på denne enhed til at indtaste HomeKit-koden igen.",
     "unreachable": "FP2 svarer ikke. Tjek, at den har strøm og er forbundet til Wi-Fi.",
     "reconnecting": "Forbindelsen til FP2 blev afbrudt. Forbinder igen…",
-    "zone_missing": "Denne zone findes ikke længere på FP2. Vælg en anden zone i Flowet.",
+    "zone_missing": "Denne zone findes ikke længere på FP2. Slet denne enhed, eller tilføj de nye zoner via Tilføj enhed.",
     "not_ready": "FP2 tager ikke imod forbindelser lige nu. Hvis du lige har genstartet den, så vent et minut, luk dette vindue og start tilføjelsen forfra.",
-    "no_zones_yet": "Zonerne kendes ikke endnu. Vent til FP2 har forbundet, og prøv så igen.",
-    "too_many_zone_names": "Du har skrevet __count__ navne, men denne FP2 har __zones__ zoner. Brug én linje pr. zone."
+    "add_fp2_first": "Ingen parret FP2 fundet. Tilføj først selve FP2 med \"Tilstedeværelsessensor FP2\", og tilføj derefter dens zoner her."
   }
 }

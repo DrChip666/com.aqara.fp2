@@ -1,0 +1,76 @@
+{
+  "name": {
+    "en": "FP2 Zone",
+    "da": "FP2-zone"
+  },
+  "class": "sensor",
+  "capabilities": [
+    "alarm_motion"
+  ],
+  "capabilitiesOptions": {
+    "alarm_motion": {
+      "title": {
+        "en": "Presence",
+        "da": "Tilstedeværelse"
+      },
+      "insightsTitleTrue": {
+        "en": "Presence detected",
+        "da": "Tilstedeværelse registreret"
+      },
+      "insightsTitleFalse": {
+        "en": "Zone empty",
+        "da": "Zonen er tom"
+      }
+    }
+  },
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "lan"
+  ],
+  "discovery": "aqara_fp2",
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+  },
+  "pair": [
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "next": "add_devices"
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ],
+  "repair": [
+    {
+      "id": "pincode",
+      "template": "pincode",
+      "options": {
+        "title": {
+          "en": "Pair the FP2 again",
+          "da": "Par FP2 igen"
+        },
+        "hint": {
+          "en": "Enter the 8-digit HomeKit code from the FP2. If pairing is refused, reset the FP2's HomeKit connection in the Aqara Home app first.",
+          "da": "Indtast den 8-cifrede HomeKit-kode fra FP2. Hvis parringen afvises, så nulstil FP2's HomeKit-forbindelse i Aqara Home-appen først."
+        },
+        "type": "number",
+        "length": 8
+      },
+      "navigation": {
+        "next": "done"
+      }
+    },
+    {
+      "id": "done",
+      "template": "done"
+    }
+  ]
+}

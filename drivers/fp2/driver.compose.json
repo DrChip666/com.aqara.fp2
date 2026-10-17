@@ -4,16 +4,32 @@
     "da": "Tilstedeværelsessensor FP2"
   },
   "class": "sensor",
-  "capabilities": ["alarm_motion", "measure_luminance"],
+  "capabilities": [
+    "alarm_motion",
+    "measure_luminance"
+  ],
   "capabilitiesOptions": {
     "alarm_motion": {
-      "title": { "en": "Presence", "da": "Tilstedeværelse" },
-      "insightsTitleTrue": { "en": "Presence detected", "da": "Tilstedeværelse registreret" },
-      "insightsTitleFalse": { "en": "Room empty", "da": "Rummet er tomt" }
+      "title": {
+        "en": "Presence",
+        "da": "Tilstedeværelse"
+      },
+      "insightsTitleTrue": {
+        "en": "Presence detected",
+        "da": "Tilstedeværelse registreret"
+      },
+      "insightsTitleFalse": {
+        "en": "Room empty",
+        "da": "Rummet er tomt"
+      }
     }
   },
-  "platforms": ["local"],
-  "connectivity": ["lan"],
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "lan"
+  ],
   "discovery": "aqara_fp2",
   "images": {
     "small": "{{driverAssetsPath}}/images/small.png",
@@ -24,8 +40,12 @@
     {
       "id": "list_devices",
       "template": "list_devices",
-      "options": { "singular": true },
-      "navigation": { "next": "pincode" }
+      "options": {
+        "singular": true
+      },
+      "navigation": {
+        "next": "pincode"
+      }
     },
     {
       "id": "pincode",
@@ -42,7 +62,10 @@
         "type": "number",
         "length": 8
       },
-      "navigation": { "prev": "list_devices", "next": "add_devices" }
+      "navigation": {
+        "prev": "list_devices",
+        "next": "add_devices"
+      }
     },
     {
       "id": "add_devices",
@@ -65,7 +88,9 @@
         "type": "number",
         "length": 8
       },
-      "navigation": { "next": "done" }
+      "navigation": {
+        "next": "done"
+      }
     },
     {
       "id": "done",

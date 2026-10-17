@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.aqara.fp2",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "compatibility": ">=12.9.0",
   "sdk": 3,
   "runtime": "nodejs",
@@ -73,138 +73,6 @@
         "username": "MortenBech241"
       }
     }
-  },
-  "flow": {
-    "triggers": [
-      {
-        "id": "zone_occupied",
-        "title": {
-          "en": "Presence detected in a zone",
-          "da": "Tilstedeværelse registreret i en zone"
-        },
-        "titleFormatted": {
-          "en": "Presence detected in [[zone]]",
-          "da": "Tilstedeværelse registreret i [[zone]]"
-        },
-        "hint": {
-          "en": "Zones are the detection areas you set up in the Aqara Home app.",
-          "da": "Zoner er de registreringsområder, du har oprettet i Aqara Home-appen."
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=fp2"
-          },
-          {
-            "name": "zone",
-            "type": "autocomplete",
-            "title": {
-              "en": "Zone",
-              "da": "Zone"
-            },
-            "placeholder": {
-              "en": "Choose a zone",
-              "da": "Vælg en zone"
-            }
-          }
-        ],
-        "tokens": [
-          {
-            "name": "zone",
-            "type": "string",
-            "title": {
-              "en": "Zone",
-              "da": "Zone"
-            },
-            "example": {
-              "en": "Sofa",
-              "da": "Sofa"
-            }
-          }
-        ]
-      },
-      {
-        "id": "zone_vacant",
-        "title": {
-          "en": "A zone became empty",
-          "da": "En zone blev tom"
-        },
-        "titleFormatted": {
-          "en": "[[zone]] became empty",
-          "da": "[[zone]] blev tom"
-        },
-        "hint": {
-          "en": "Zones are the detection areas you set up in the Aqara Home app.",
-          "da": "Zoner er de registreringsområder, du har oprettet i Aqara Home-appen."
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=fp2"
-          },
-          {
-            "name": "zone",
-            "type": "autocomplete",
-            "title": {
-              "en": "Zone",
-              "da": "Zone"
-            },
-            "placeholder": {
-              "en": "Choose a zone",
-              "da": "Vælg en zone"
-            }
-          }
-        ],
-        "tokens": [
-          {
-            "name": "zone",
-            "type": "string",
-            "title": {
-              "en": "Zone",
-              "da": "Zone"
-            },
-            "example": {
-              "en": "Sofa",
-              "da": "Sofa"
-            }
-          }
-        ]
-      }
-    ],
-    "conditions": [
-      {
-        "id": "zone_is_occupied",
-        "title": {
-          "en": "Someone !{{is|isn't}} in a zone",
-          "da": "Der er !{{nogen|ingen}} i en zone"
-        },
-        "titleFormatted": {
-          "en": "Someone !{{is|isn't}} in [[zone]]",
-          "da": "Der er !{{nogen|ingen}} i [[zone]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=fp2"
-          },
-          {
-            "name": "zone",
-            "type": "autocomplete",
-            "title": {
-              "en": "Zone",
-              "da": "Zone"
-            },
-            "placeholder": {
-              "en": "Choose a zone",
-              "da": "Vælg en zone"
-            }
-          }
-        ]
-      }
-    ]
   },
   "drivers": [
     {
@@ -306,31 +174,84 @@
           "template": "done"
         }
       ],
-      "id": "fp2",
-      "settings": [
-        {
-          "type": "group",
-          "label": {
-            "en": "Zones",
-            "da": "Zoner"
+      "id": "fp2"
+    },
+    {
+      "name": {
+        "en": "FP2 Zone",
+        "da": "FP2-zone"
+      },
+      "class": "sensor",
+      "capabilities": [
+        "alarm_motion"
+      ],
+      "capabilitiesOptions": {
+        "alarm_motion": {
+          "title": {
+            "en": "Presence",
+            "da": "Tilstedeværelse"
           },
-          "children": [
-            {
-              "id": "fp2_zone_names",
-              "type": "textarea",
-              "label": {
-                "en": "Zone names",
-                "da": "Zonenavne"
-              },
-              "value": "",
-              "hint": {
-                "en": "One name per line, in the same order as the zones on the device. Leave a line empty to use the name from the FP2. Renaming does not affect your Flows.",
-                "da": "Ét navn pr. linje, i samme rækkefølge som zonerne på enheden. Lad en linje stå tom for at bruge navnet fra FP2. Omdøbning påvirker ikke dine Flows."
-              }
-            }
-          ]
+          "insightsTitleTrue": {
+            "en": "Presence detected",
+            "da": "Tilstedeværelse registreret"
+          },
+          "insightsTitleFalse": {
+            "en": "Zone empty",
+            "da": "Zonen er tom"
+          }
         }
-      ]
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "discovery": "aqara_fp2",
+      "images": {
+        "small": "/drivers/fp2_zone/assets/images/small.png",
+        "large": "/drivers/fp2_zone/assets/images/large.png",
+        "xlarge": "/drivers/fp2_zone/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "pincode",
+          "template": "pincode",
+          "options": {
+            "title": {
+              "en": "Pair the FP2 again",
+              "da": "Par FP2 igen"
+            },
+            "hint": {
+              "en": "Enter the 8-digit HomeKit code from the FP2. If pairing is refused, reset the FP2's HomeKit connection in the Aqara Home app first.",
+              "da": "Indtast den 8-cifrede HomeKit-kode fra FP2. Hvis parringen afvises, så nulstil FP2's HomeKit-forbindelse i Aqara Home-appen først."
+            },
+            "type": "number",
+            "length": 8
+          },
+          "navigation": {
+            "next": "done"
+          }
+        },
+        {
+          "id": "done",
+          "template": "done"
+        }
+      ],
+      "id": "fp2_zone"
     }
   ],
   "discovery": {

@@ -7,12 +7,11 @@
     "max_tries": "The FP2 refused pairing after too many wrong codes. Restart the FP2 and try again.",
     "pairing_failed": "Pairing with the FP2 failed. Make sure it is powered and on the same network as Homey, then try again.",
     "not_found": "The FP2 cannot be found on the network. Make sure it is powered and on the same network as Homey.",
-    "not_paired": "The FP2 no longer accepts Homey. Use Repair to enter the HomeKit code again.",
+    "not_paired": "The FP2 no longer accepts Homey. Use Repair on this device to enter the HomeKit code again.",
     "unreachable": "The FP2 does not respond. Check that it is powered and connected to Wi-Fi.",
     "reconnecting": "Connection to the FP2 was lost. Reconnecting…",
-    "zone_missing": "This zone no longer exists on the FP2. Choose another zone in the Flow.",
+    "zone_missing": "This zone no longer exists on the FP2. Delete this device, or add the new zones via Add device.",
     "not_ready": "The FP2 is not accepting connections right now. If you just restarted it, wait a minute, close this window and start adding the device again.",
-    "no_zones_yet": "The zones are not known yet. Wait until the FP2 has connected, then try again.",
-    "too_many_zone_names": "You entered __count__ names, but this FP2 has __zones__ zones. Use one line per zone."
+    "add_fp2_first": "No paired FP2 found. First add the FP2 itself with \"Presence Sensor FP2\", then add its zones here."
   }
 }

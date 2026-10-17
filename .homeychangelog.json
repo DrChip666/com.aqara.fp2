@@ -4,10 +4,15 @@
     "da": "Første udgivelse: lokal registrering af tilstedeværelse med status pr. zone, lysniveau og Flow-kort til zoner."
   },
   "1.0.1": {
-    "en": "New images and icons"
+    "en": "New images and icons",
+    "da": "Nye billeder og ikoner"
   },
   "1.1.0": {
     "en": "Rename zones in the device settings",
     "da": "Omdøb zoner i enhedens indstillinger"
+  },
+  "2.0.0": {
+    "en": "Every zone is now its own device: rename it, place it in a room and use it in Flows. Add zones with the new FP2 Zone device. Flows using the old zone cards must be recreated.",
+    "da": "Hver zone er nu sin egen enhed: omdøb den, placer den i et rum og brug den i Flows. Tilføj zoner med den nye FP2-zone-enhed. Flows med de gamle zone-kort skal laves igen."
   }
 }

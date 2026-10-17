@@ -1,326 +1,128 @@
 'use strict';
 
 const Homey = require('homey');
-const { Fp2Client } = require('../../lib/Fp2Client');
 
-const ZONE_PREFIX = 'alarm_motion.zone_';
-const POLL_INTERVAL = 5 * 60 * 1000;
-const RECONNECT_MIN = 10 * 1000;
-const RECONNECT_MAX = 5 * 60 * 1000;
+const LEGACY_ZONE_PREFIX = 'alarm_motion.zone_';
 
+/**
+ * One class for both kinds of devices:
+ *  - main FP2 (data { id }): overall presence (any zone occupied) and light level
+ *  - zone (data { id, zone }): presence in one zone set up in the Aqara Home app
+ * All devices of the same FP2 share one connection (Fp2Hub).
+ */
 class Fp2Device extends Homey.Device {
 
+  get fp2Id() {
+    return this.getData().id;
+  }
+
+  get zoneId() {
+    return this.getData().zone || null;
+  }
+
   async onInit() {
-    this.fp2 = null;
-    this.address = null;
-    this.port = null;
-    this.reconnectDelay = RECONNECT_MIN;
-    this.reconnectTimer = null;
-    this.pollTimer = null;
-    this.connecting = null;
+    await this._syncKeys();
+    if (!this.zoneId) await this._migrateFromV1();
 
-    const { id } = this.getData();
-    const where = this.getStoreValue('pairingData') ? 'in device store'
-      : (this.homey.app.getPendingPairing(id) ? 'pending in app' : 'MISSING');
-    this.log(`Init ${id}: pairing keys ${where}`);
+    this.hub = this.homey.app.getHub(this.fp2Id);
+    this._handlers = {
+      connected: (state) => this._onConnected(state),
+      disconnected: () => this.setUnavailable(this.homey.__('error.reconnecting')).catch(this.error),
+      unpaired: () => this.setUnavailable(this.homey.__('error.not_paired')).catch(this.error),
+      zone: (zone) => this._onZone(zone),
+      light: (lux) => this._setValue('measure_luminance', lux),
+    };
+    for (const [event, handler] of Object.entries(this._handlers)) this.hub.on(event, handler);
 
-    if (!(await this._loadPairingData())) {
+    if (!this.homey.app.getKeys(this.fp2Id)) {
       await this.setUnavailable(this.homey.__('error.not_paired')).catch(this.error);
+    } else if (this.hub.connected) {
+      this._onConnected(this.hub.state);
+    }
+    this.log(`Init ${this.zoneId ? `zone ${this.zoneId} of` : 'main'} ${this.fp2Id}`);
+  }
+
+  /** Keep the app's keys and this device's mirror in step; whichever exists wins. */
+  async _syncKeys() {
+    const appKeys = this.homey.app.getKeys(this.fp2Id);
+    const ownKeys = this.getStoreValue('pairingData');
+    if (appKeys && !ownKeys) {
+      await this.setStoreValue('pairingData', appKeys);
+    } else if (ownKeys && !appKeys) {
+      this.homey.app.setKeys(this.fp2Id, ownKeys);
+      this.log('Restored pairing keys from device store');
+    } else if (appKeys && ownKeys && JSON.stringify(appKeys) !== JSON.stringify(ownKeys)) {
+      await this.setStoreValue('pairingData', appKeys); // the app's copy is the newest (repair)
     }
   }
 
-  /**
-   * Return the HomeKit keys, first claiming the ones the driver parked during
-   * pairing. Called from onInit and again before every connect, because Homey
-   * can start discovery for a new device before onInit has finished.
-   */
-  async _loadPairingData() {
-    const stored = this.getStoreValue('pairingData');
-    if (stored) return stored;
-
-    const { id } = this.getData();
-    const pending = this.homey.app.getPendingPairing(id);
-    if (!pending) return null;
-
-    // The backup in the app is kept until the first successful connect.
-    await this.setStoreValue('pairingData', pending);
-    this.log('Picked up pairing keys from pairing session');
-    return pending;
+  /** Version 1.x kept every zone as a sub-capability on this device. Zones are now devices. */
+  async _migrateFromV1() {
+    for (const capabilityId of this.getCapabilities()) {
+      if (capabilityId.startsWith(LEGACY_ZONE_PREFIX)) {
+        await this.removeCapability(capabilityId).catch(this.error);
+      }
+    }
+    if (!this.hasCapability('measure_luminance')) {
+      await this.addCapability('measure_luminance').catch(this.error);
+    }
+    // 'zoneNames' is kept on purpose: pairing uses it as default names for zone devices.
+    for (const key of ['zoneTitles', 'zones']) {
+      if (this.getStoreValue(key) !== undefined) await this.unsetStoreValue(key).catch(this.error);
+    }
   }
 
-  // ---------- Discovery ----------
+  // ---------- Discovery: every device of this FP2 gets the same result ----------
 
   onDiscoveryResult(result) {
-    return result.id === this.getData().id;
+    return result.id === this.fp2Id;
   }
 
   async onDiscoveryAvailable(result) {
-    this.address = result.address;
-    this.port = result.port;
+    this.hub.setTarget(result.address, result.port);
     try {
-      await this.connect();
+      const state = await this.hub.ensureConnected();
+      this._onConnected(state);
     } catch (err) {
-      this.error('Startup failed:', err);
-      throw err; // marks the device unavailable with the message
+      this.error('Startup failed:', err.message);
+      throw new Error(this.homey.__(err.i18nKey || 'error.unreachable'));
     }
   }
 
   onDiscoveryAddressChanged(result) {
-    this.address = result.address;
-    this.port = result.port;
-    this.log('Address changed to', result.address);
-    this.connect().catch((err) => this._onConnectFailed(err));
+    this.hub.setTarget(result.address, result.port);
   }
 
-  onDiscoveryLastSeenChanged() {
-    if (!this.fp2 || !this.fp2.connected) {
-      this.connect().catch((err) => this._onConnectFailed(err));
-    }
+  onDiscoveryLastSeenChanged(result) {
+    this.hub.setTarget(result.address, result.port);
+    if (!this.hub.connected) this.hub.ensureConnected().catch(() => {});
   }
 
-  // ---------- Connection ----------
+  // ---------- State ----------
 
-  async connect() {
-    // Several triggers (discovery, timer, repair) can ask at once; share one attempt.
-    if (this.connecting) return this.connecting;
-    this.connecting = this._connect().finally(() => {
-      this.connecting = null;
-    });
-    return this.connecting;
-  }
-
-  async _connect() {
-    const pairingData = await this._loadPairingData();
-    if (!pairingData) throw new Error(this.homey.__('error.not_paired'));
-    if (!this.address) throw new Error(this.homey.__('error.not_found'));
-
-    this._clearTimers();
-    if (this.fp2) {
-      this.fp2.removeAllListeners();
-      await this.fp2.close();
-    }
-
-    this.fp2 = new Fp2Client({
-      id: this.getData().id,
-      address: this.address,
-      port: this.port,
-      pairingData,
-      log: this.log.bind(this),
-    });
-    this.fp2.on('zone', (zone) => this._onZoneChanged(zone).catch(this.error));
-    this.fp2.on('light', (lux) => this._setValue('measure_luminance', lux));
-    this.fp2.on('disconnect', () => this._scheduleReconnect());
-
-    let state;
-    try {
-      state = await this.fp2.connect();
-    } catch (err) {
-      throw new Error(this.homey.__(err.i18nKey || 'error.unreachable'));
-    }
-
-    await this._syncZones(state.zones);
-    if (state.light !== null) this._setValue('measure_luminance', state.light);
-
-    this.reconnectDelay = RECONNECT_MIN;
-    this.pollTimer = this.homey.setInterval(() => this._poll(), POLL_INTERVAL);
-    await this.setAvailable();
-    // Keys are proven to work and live in the device store; drop the backup.
-    this.homey.app.clearPendingPairing(this.getData().id);
-    this.log(`Connected, ${state.zones.length} zone(s)`);
-    return state;
-  }
-
-  async _poll() {
-    try {
-      await this.fp2.poll();
-    } catch (err) {
-      this.log('Poll failed, reconnecting');
-      this._scheduleReconnect();
-    }
-  }
-
-  _scheduleReconnect() {
-    if (this.reconnectTimer) return;
-    this._clearTimers();
-    this.setUnavailable(this.homey.__('error.reconnecting')).catch(this.error);
-
-    const delay = this.reconnectDelay;
-    this.reconnectDelay = Math.min(this.reconnectDelay * 2, RECONNECT_MAX);
-    this.reconnectTimer = this.homey.setTimeout(() => {
-      this.reconnectTimer = null;
-      this.connect().catch((err) => this._onConnectFailed(err));
-    }, delay);
-  }
-
-  _onConnectFailed(err) {
-    this.error('Connect failed:', err.message);
-    // A rejected pairing will not fix itself; the user needs Repair.
-    if (err.message === this.homey.__('error.not_paired')) {
-      this._clearTimers();
-      this.setUnavailable(err.message).catch(this.error);
-      return;
-    }
-    this._scheduleReconnect();
-  }
-
-  _clearTimers() {
-    if (this.pollTimer) this.homey.clearInterval(this.pollTimer);
-    if (this.reconnectTimer) this.homey.clearTimeout(this.reconnectTimer);
-    this.pollTimer = null;
-    this.reconnectTimer = null;
-  }
-
-  /** Called by the driver after a successful repair. */
-  async applyNewPairing(pairingData) {
-    await this.setStoreValue('pairingData', pairingData);
-    this.homey.app.clearPendingPairing(this.getData().id);
-    const result = this.driver.getDiscoveryResult(this.getData().id);
-    if (result) {
-      this.address = result.address;
-      this.port = result.port;
-    }
-    await this.connect();
-  }
-
-  // ---------- Zones ----------
-
-  async _syncZones(zones) {
-    const wanted = new Map(zones.map((zone) => [`${ZONE_PREFIX}${zone.id}`, zone]));
-
-    // Titles we have applied, kept in the store: reading options back from
-    // Homey is not reliable for a capability that was just added.
-    const titles = { ...(this.getStoreValue('zoneTitles') || {}) };
-
-    // Remove zones that were deleted in the Aqara app.
-    for (const capabilityId of this.getCapabilities()) {
-      if (capabilityId.startsWith(ZONE_PREFIX) && !wanted.has(capabilityId)) {
-        try {
-          await this.removeCapability(capabilityId);
-          delete titles[capabilityId];
-        } catch (err) {
-          this.error(`Could not remove ${capabilityId}:`, err);
-        }
+  _onConnected(state) {
+    if (!state) return;
+    if (this.zoneId) {
+      const zone = state.zones.find((z) => z.id === this.zoneId);
+      if (!zone) {
+        this.setUnavailable(this.homey.__('error.zone_missing')).catch(this.error);
+        return;
       }
+      this._setValue('alarm_motion', zone.occupied);
+    } else {
+      this._setValue('alarm_motion', state.zones.some((z) => z.occupied));
+      if (state.light !== null) this._setValue('measure_luminance', state.light);
     }
-
-    // Each zone is set up on its own, so one failing zone cannot take the device down.
-    for (const [capabilityId, zone] of wanted) {
-      try {
-        if (!this.hasCapability(capabilityId)) {
-          await this.addCapability(capabilityId);
-        }
-        await this._applyZoneTitle(capabilityId, this._zoneName(zone), titles);
-      } catch (err) {
-        this.error(`Zone "${zone.name}" (${capabilityId}) could not be set up:`, err);
-        continue;
-      }
-      this._setValue(capabilityId, zone.occupied);
-    }
-
-    await this.setStoreValue('zoneTitles', titles);
-    // The FP2's own names; names set by the user are kept separately in 'zoneNames'.
-    await this.setStoreValue('zones', zones.map(({ id, name }) => ({ id, name })));
-    await this._updateZoneNamesSetting();
-    this.log('Zones:', zones.map((z) => `${this._zoneName(z)}=${z.occupied ? 'occupied' : 'empty'}`).join(', ') || 'none');
-    this._updateAnyPresence();
+    this.setAvailable().catch(this.error);
   }
 
-  /** The name shown in Homey: the user's own name if set, otherwise the FP2's. */
-  _zoneName(zone) {
-    const custom = this.getStoreValue('zoneNames') || {};
-    return custom[zone.id] || zone.name;
-  }
-
-  async _applyZoneTitle(capabilityId, name, titles) {
-    if (titles[capabilityId] === name) return;
-    await this.setCapabilityOptions(capabilityId, {
-      title: { en: name, da: name },
-      insightsTitleTrue: { en: `${name}: presence`, da: `${name}: tilstedeværelse` },
-      insightsTitleFalse: { en: `${name}: empty`, da: `${name}: tom` },
-    });
-    titles[capabilityId] = name;
-  }
-
-  /** Show the current names in the settings field, one line per zone, in tile order. */
-  async _updateZoneNamesSetting() {
-    const zones = this.getStoreValue('zones') || [];
-    const text = zones.map((zone) => this._zoneName(zone)).join('\n');
-    if (this.getSetting('fp2_zone_names') !== text) {
-      await this.setSettings({ fp2_zone_names: text }).catch(this.error);
+  _onZone({ id, occupied }) {
+    if (this.zoneId) {
+      if (id === this.zoneId) this._setValue('alarm_motion', occupied);
+    } else if (this.hub.state) {
+      this._setValue('alarm_motion', this.hub.state.zones.some((z) => z.occupied));
     }
   }
-
-  async onSettings({ newSettings, changedKeys }) {
-    if (!changedKeys.includes('fp2_zone_names')) return;
-
-    const zones = this.getStoreValue('zones') || [];
-    if (zones.length === 0) throw new Error(this.homey.__('error.no_zones_yet'));
-
-    const lines = String(newSettings.fp2_zone_names || '').split(/\r?\n/).map((line) => line.trim());
-    while (lines.length > zones.length && lines[lines.length - 1] === '') lines.pop();
-    if (lines.length > zones.length) {
-      throw new Error(this.homey.__('error.too_many_zone_names', { count: lines.length, zones: zones.length }));
-    }
-
-    // Line N names zone N. Stored by zone ID, so Flows and later zone changes keep the right name.
-    const custom = {};
-    zones.forEach((zone, index) => {
-      const name = (lines[index] || '').slice(0, 60);
-      if (name && name !== zone.name) custom[zone.id] = name;
-    });
-    await this.setStoreValue('zoneNames', custom);
-
-    const titles = { ...(this.getStoreValue('zoneTitles') || {}) };
-    for (const zone of zones) {
-      const capabilityId = `${ZONE_PREFIX}${zone.id}`;
-      if (this.hasCapability(capabilityId)) {
-        await this._applyZoneTitle(capabilityId, this._zoneName(zone), titles);
-      }
-    }
-    await this.setStoreValue('zoneTitles', titles);
-    this.log('Zone names changed:', zones.map((zone) => this._zoneName(zone)).join(', '));
-
-    // Homey saves the field as typed after this returns; afterwards, fill empty
-    // lines back in with the FP2's names so the field always shows what is used.
-    this.homey.setTimeout(() => this._updateZoneNamesSetting().catch(this.error), 1500);
-  }
-
-  async _onZoneChanged({ id, occupied }) {
-    const capabilityId = `${ZONE_PREFIX}${id}`;
-    if (!this.hasCapability(capabilityId)) return;
-
-    this._setValue(capabilityId, occupied);
-    this._updateAnyPresence();
-
-    const zone = (this.getStoreValue('zones') || []).find((z) => z.id === id);
-    const tokens = { zone: zone ? this._zoneName(zone) : id };
-    const card = occupied ? this.driver.zoneOccupiedTrigger : this.driver.zoneVacantTrigger;
-    await card.trigger(this, tokens, { zoneId: id });
-  }
-
-  _updateAnyPresence() {
-    const any = this.getCapabilities()
-      .filter((capabilityId) => capabilityId.startsWith(ZONE_PREFIX))
-      .some((capabilityId) => this.getCapabilityValue(capabilityId) === true);
-    this._setValue('alarm_motion', any);
-  }
-
-  isZoneOccupied(zoneId) {
-    const capabilityId = `${ZONE_PREFIX}${zoneId}`;
-    if (!this.hasCapability(capabilityId)) {
-      throw new Error(this.homey.__('error.zone_missing'));
-    }
-    return this.getCapabilityValue(capabilityId) === true;
-  }
-
-  getZoneAutocomplete(query) {
-    const q = String(query || '').toLowerCase();
-    return (this.getStoreValue('zones') || [])
-      .map((zone) => ({ id: zone.id, name: this._zoneName(zone) }))
-      .filter((zone) => zone.name.toLowerCase().includes(q));
-  }
-
-  // ---------- Helpers and lifecycle ----------
 
   _setValue(capabilityId, value) {
     if (!this.hasCapability(capabilityId)) return;
@@ -328,26 +130,32 @@ class Fp2Device extends Homey.Device {
     this.setCapabilityValue(capabilityId, value).catch(this.error);
   }
 
+  // ---------- Lifecycle ----------
+
+  _detach() {
+    if (!this.hub || !this._handlers) return;
+    for (const [event, handler] of Object.entries(this._handlers)) this.hub.off(event, handler);
+    this._handlers = null;
+  }
+
   async onUninit() {
-    this._clearTimers();
-    if (this.fp2) {
-      this.fp2.removeAllListeners();
-      await this.fp2.close();
-    }
+    this._detach();
   }
 
   async onDeleted() {
-    this._clearTimers();
-    this.homey.app.clearPendingPairing(this.getData().id);
-    if (!this.fp2) return;
-    // Release the FP2 so it can be added again, here or to another controller.
-    this.fp2.removeAllListeners();
+    this._detach();
+    const remaining = this.homey.app.getDevicesOf(this.fp2Id, this);
+    if (remaining.length > 0) return; // other devices still use this FP2
+
+    // Last device of this FP2: release it so it can be added again without a reset.
     try {
-      await this.fp2.unpair();
+      await this.hub.unpair();
       this.log('Pairing removed from FP2; it can be added again without a reset');
     } catch (err) {
       this.error('Could not remove pairing from FP2, it will need a reset before it can be added again:', err.message);
     }
+    this.homey.app.deleteKeys(this.fp2Id);
+    await this.homey.app.removeHub(this.fp2Id);
   }
 
 }
