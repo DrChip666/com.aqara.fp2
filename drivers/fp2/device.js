@@ -205,31 +205,84 @@ class Fp2Device extends Homey.Device {
 
     // Each zone is set up on its own, so one failing zone cannot take the device down.
     for (const [capabilityId, zone] of wanted) {
-      let step = 'addCapability';
       try {
         if (!this.hasCapability(capabilityId)) {
           await this.addCapability(capabilityId);
         }
-        if (titles[capabilityId] !== zone.name) {
-          step = 'setCapabilityOptions';
-          await this.setCapabilityOptions(capabilityId, {
-            title: { en: zone.name, da: zone.name },
-            insightsTitleTrue: { en: `${zone.name}: presence`, da: `${zone.name}: tilstedeværelse` },
-            insightsTitleFalse: { en: `${zone.name}: empty`, da: `${zone.name}: tom` },
-          });
-          titles[capabilityId] = zone.name;
-        }
+        await this._applyZoneTitle(capabilityId, this._zoneName(zone), titles);
       } catch (err) {
-        this.error(`Zone "${zone.name}" (${capabilityId}) failed in ${step}:`, err);
+        this.error(`Zone "${zone.name}" (${capabilityId}) could not be set up:`, err);
         continue;
       }
       this._setValue(capabilityId, zone.occupied);
     }
 
     await this.setStoreValue('zoneTitles', titles);
+    // The FP2's own names; names set by the user are kept separately in 'zoneNames'.
     await this.setStoreValue('zones', zones.map(({ id, name }) => ({ id, name })));
-    this.log('Zones:', zones.map((z) => `${z.name}=${z.occupied ? 'occupied' : 'empty'}`).join(', ') || 'none');
+    await this._updateZoneNamesSetting();
+    this.log('Zones:', zones.map((z) => `${this._zoneName(z)}=${z.occupied ? 'occupied' : 'empty'}`).join(', ') || 'none');
     this._updateAnyPresence();
+  }
+
+  /** The name shown in Homey: the user's own name if set, otherwise the FP2's. */
+  _zoneName(zone) {
+    const custom = this.getStoreValue('zoneNames') || {};
+    return custom[zone.id] || zone.name;
+  }
+
+  async _applyZoneTitle(capabilityId, name, titles) {
+    if (titles[capabilityId] === name) return;
+    await this.setCapabilityOptions(capabilityId, {
+      title: { en: name, da: name },
+      insightsTitleTrue: { en: `${name}: presence`, da: `${name}: tilstedeværelse` },
+      insightsTitleFalse: { en: `${name}: empty`, da: `${name}: tom` },
+    });
+    titles[capabilityId] = name;
+  }
+
+  /** Show the current names in the settings field, one line per zone, in tile order. */
+  async _updateZoneNamesSetting() {
+    const zones = this.getStoreValue('zones') || [];
+    const text = zones.map((zone) => this._zoneName(zone)).join('\n');
+    if (this.getSetting('fp2_zone_names') !== text) {
+      await this.setSettings({ fp2_zone_names: text }).catch(this.error);
+    }
+  }
+
+  async onSettings({ newSettings, changedKeys }) {
+    if (!changedKeys.includes('fp2_zone_names')) return;
+
+    const zones = this.getStoreValue('zones') || [];
+    if (zones.length === 0) throw new Error(this.homey.__('error.no_zones_yet'));
+
+    const lines = String(newSettings.fp2_zone_names || '').split(/\r?\n/).map((line) => line.trim());
+    while (lines.length > zones.length && lines[lines.length - 1] === '') lines.pop();
+    if (lines.length > zones.length) {
+      throw new Error(this.homey.__('error.too_many_zone_names', { count: lines.length, zones: zones.length }));
+    }
+
+    // Line N names zone N. Stored by zone ID, so Flows and later zone changes keep the right name.
+    const custom = {};
+    zones.forEach((zone, index) => {
+      const name = (lines[index] || '').slice(0, 60);
+      if (name && name !== zone.name) custom[zone.id] = name;
+    });
+    await this.setStoreValue('zoneNames', custom);
+
+    const titles = { ...(this.getStoreValue('zoneTitles') || {}) };
+    for (const zone of zones) {
+      const capabilityId = `${ZONE_PREFIX}${zone.id}`;
+      if (this.hasCapability(capabilityId)) {
+        await this._applyZoneTitle(capabilityId, this._zoneName(zone), titles);
+      }
+    }
+    await this.setStoreValue('zoneTitles', titles);
+    this.log('Zone names changed:', zones.map((zone) => this._zoneName(zone)).join(', '));
+
+    // Homey saves the field as typed after this returns; afterwards, fill empty
+    // lines back in with the FP2's names so the field always shows what is used.
+    this.homey.setTimeout(() => this._updateZoneNamesSetting().catch(this.error), 1500);
   }
 
   async _onZoneChanged({ id, occupied }) {
@@ -240,7 +293,7 @@ class Fp2Device extends Homey.Device {
     this._updateAnyPresence();
 
     const zone = (this.getStoreValue('zones') || []).find((z) => z.id === id);
-    const tokens = { zone: zone ? zone.name : id };
+    const tokens = { zone: zone ? this._zoneName(zone) : id };
     const card = occupied ? this.driver.zoneOccupiedTrigger : this.driver.zoneVacantTrigger;
     await card.trigger(this, tokens, { zoneId: id });
   }
@@ -263,8 +316,8 @@ class Fp2Device extends Homey.Device {
   getZoneAutocomplete(query) {
     const q = String(query || '').toLowerCase();
     return (this.getStoreValue('zones') || [])
-      .filter((zone) => zone.name.toLowerCase().includes(q))
-      .map((zone) => ({ id: zone.id, name: zone.name }));
+      .map((zone) => ({ id: zone.id, name: this._zoneName(zone) }))
+      .filter((zone) => zone.name.toLowerCase().includes(q));
   }
 
   // ---------- Helpers and lifecycle ----------

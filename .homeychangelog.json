@@ -5,5 +5,9 @@
   },
   "1.0.1": {
     "en": "New images and icons"
+  },
+  "1.1.0": {
+    "en": "Rename zones in the device settings",
+    "da": "Omdøb zoner i enhedens indstillinger"
   }
 }

@@ -11,6 +11,8 @@
     "unreachable": "FP2 svarer ikke. Tjek, at den har strøm og er forbundet til Wi-Fi.",
     "reconnecting": "Forbindelsen til FP2 blev afbrudt. Forbinder igen…",
     "zone_missing": "Denne zone findes ikke længere på FP2. Vælg en anden zone i Flowet.",
-    "not_ready": "FP2 tager ikke imod forbindelser lige nu. Hvis du lige har genstartet den, så vent et minut, luk dette vindue og start tilføjelsen forfra."
+    "not_ready": "FP2 tager ikke imod forbindelser lige nu. Hvis du lige har genstartet den, så vent et minut, luk dette vindue og start tilføjelsen forfra.",
+    "no_zones_yet": "Zonerne kendes ikke endnu. Vent til FP2 har forbundet, og prøv så igen.",
+    "too_many_zone_names": "Du har skrevet __count__ navne, men denne FP2 har __zones__ zoner. Brug én linje pr. zone."
   }
 }

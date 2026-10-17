@@ -1,0 +1,18 @@
+[
+  {
+    "type": "group",
+    "label": { "en": "Zones", "da": "Zoner" },
+    "children": [
+      {
+        "id": "fp2_zone_names",
+        "type": "textarea",
+        "label": { "en": "Zone names", "da": "Zonenavne" },
+        "value": "",
+        "hint": {
+          "en": "One name per line, in the same order as the zones on the device. Leave a line empty to use the name from the FP2. Renaming does not affect your Flows.",
+          "da": "Ét navn pr. linje, i samme rækkefølge som zonerne på enheden. Lad en linje stå tom for at bruge navnet fra FP2. Omdøbning påvirker ikke dine Flows."
+        }
+      }
+    ]
+  }
+]
