@@ -12,7 +12,7 @@ class Fp2Driver extends Fp2DriverBase {
     let selectedId = null;
 
     session.setHandler('list_devices', async () => {
-      const results = Object.values(this.getDiscoveryStrategy().getDiscoveryResults());
+      const results = await this.getLiveDiscoveryResults();
       return results.map((result) => ({
         name: `Aqara FP2 ${shortId(result.id)}`,
         data: { id: result.id },

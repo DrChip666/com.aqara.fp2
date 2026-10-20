@@ -12,6 +12,7 @@
     "reconnecting": "Connection to the FP2 was lost. Reconnecting…",
     "zone_missing": "This zone no longer exists on the FP2. Delete this device, or add the new zones via Add device.",
     "not_ready": "The FP2 is not accepting connections right now. If you just restarted it, wait a minute, close this window and start adding the device again.",
-    "add_fp2_first": "No paired FP2 found. First add the FP2 itself with \"Presence Sensor FP2\", then add its zones here."
+    "add_fp2_first": "No paired FP2 found. First add the FP2 itself with \"Presence Sensor FP2\", then add its zones here.",
+    "no_keys": "This FP2 was added without a successful pairing. Use Repair on this device and enter the HomeKit code, or delete it and add it again."
   }
 }

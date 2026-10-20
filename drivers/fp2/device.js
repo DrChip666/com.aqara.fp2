@@ -35,7 +35,8 @@ class Fp2Device extends Homey.Device {
     for (const [event, handler] of Object.entries(this._handlers)) this.hub.on(event, handler);
 
     if (!this.homey.app.getKeys(this.fp2Id)) {
-      await this.setUnavailable(this.homey.__('error.not_paired')).catch(this.error);
+      this.log('No pairing keys: this FP2 was never paired with Homey');
+      await this.setUnavailable(this.homey.__('error.no_keys')).catch(this.error);
     } else if (this.hub.connected) {
       this._onConnected(this.hub.state);
     }
@@ -85,6 +86,9 @@ class Fp2Device extends Homey.Device {
       this._onConnected(state);
     } catch (err) {
       this.error('Startup failed:', err.message);
+      if (err.i18nKey === 'error.not_paired' && !this.homey.app.getKeys(this.fp2Id)) {
+        throw new Error(this.homey.__('error.no_keys'));
+      }
       throw new Error(this.homey.__(err.i18nKey || 'error.unreachable'));
     }
   }
@@ -149,8 +153,11 @@ class Fp2Device extends Homey.Device {
 
     // Last device of this FP2: release it so it can be added again without a reset.
     try {
-      await this.hub.unpair();
-      this.log('Pairing removed from FP2; it can be added again without a reset');
+      if (await this.hub.unpair()) {
+        this.log('Pairing removed from FP2; it can be added again without a reset');
+      } else {
+        this.log('Homey had no pairing with this FP2, so there was nothing to remove');
+      }
     } catch (err) {
       this.error('Could not remove pairing from FP2, it will need a reset before it can be added again:', err.message);
     }

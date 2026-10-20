@@ -63,9 +63,6 @@
         },
         "type": "number",
         "length": 8
-      },
-      "navigation": {
-        "next": "done"
       }
     },
     {

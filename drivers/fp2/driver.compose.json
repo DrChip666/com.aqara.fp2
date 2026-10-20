@@ -63,8 +63,7 @@
         "length": 8
       },
       "navigation": {
-        "prev": "list_devices",
-        "next": "add_devices"
+        "prev": "list_devices"
       }
     },
     {
@@ -87,9 +86,6 @@
         },
         "type": "number",
         "length": 8
-      },
-      "navigation": {
-        "next": "done"
       }
     },
     {
