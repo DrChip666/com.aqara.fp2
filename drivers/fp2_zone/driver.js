@@ -12,6 +12,7 @@ class Fp2ZoneDriver extends Fp2DriverBase {
   async onPairListDevices() {
     const results = Object.values(this.getDiscoveryStrategy().getDiscoveryResults());
     const paired = results.filter((result) => this.homey.app.getKeys(result.id));
+    this.log(`Zone list: ${paired.length} paired FP2(s) on the network`);
     if (paired.length === 0) throw new Error(this.homey.__('error.add_fp2_first'));
 
     const devices = [];
@@ -22,7 +23,8 @@ class Fp2ZoneDriver extends Fp2DriverBase {
 
       let state;
       try {
-        state = await hub.ensureConnected();
+        // Always read the zones fresh, so zones drawn in the Aqara app since pairing show up.
+        state = await hub.refresh();
       } catch (err) {
         this.error(`Could not read zones of ${id}:`, err.message);
         continue; // other FP2s can still be listed

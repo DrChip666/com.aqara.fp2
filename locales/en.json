@@ -13,6 +13,8 @@
     "zone_missing": "This zone no longer exists on the FP2. Delete this device, or add the new zones via Add device.",
     "not_ready": "The FP2 is not accepting connections right now. If you just restarted it, wait a minute, close this window and start adding the device again.",
     "add_fp2_first": "No paired FP2 found. First add the FP2 itself with \"Presence Sensor FP2\", then add its zones here.",
-    "no_keys": "This FP2 was added without a successful pairing. Use Repair on this device and enter the HomeKit code, or delete it and add it again."
+    "no_keys": "This FP2 was added without a successful pairing. Use Repair on this device and enter the HomeKit code, or delete it and add it again.",
+    "none_found": "No FP2 found on the network. Check that the FP2 is online in the Aqara Home app and on the same network as Homey. Restarting Homey can also help.",
+    "none_answering": "Homey can see your FP2, but it is not answering right now. If you just restarted or reset it, wait a few minutes and try again."
   }
 }

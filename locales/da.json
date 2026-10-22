@@ -13,6 +13,8 @@
     "zone_missing": "Denne zone findes ikke længere på FP2. Slet denne enhed, eller tilføj de nye zoner via Tilføj enhed.",
     "not_ready": "FP2 tager ikke imod forbindelser lige nu. Hvis du lige har genstartet den, så vent et minut, luk dette vindue og start tilføjelsen forfra.",
     "add_fp2_first": "Ingen parret FP2 fundet. Tilføj først selve FP2 med \"Tilstedeværelsessensor FP2\", og tilføj derefter dens zoner her.",
-    "no_keys": "Denne FP2 blev tilføjet uden en gennemført parring. Brug Reparer på enheden og indtast HomeKit-koden, eller slet den og tilføj den igen."
+    "no_keys": "Denne FP2 blev tilføjet uden en gennemført parring. Brug Reparer på enheden og indtast HomeKit-koden, eller slet den og tilføj den igen.",
+    "none_found": "Ingen FP2 fundet på netværket. Tjek at FP2 er online i Aqara Home-appen og på samme netværk som Homey. En genstart af Homey kan også hjælpe.",
+    "none_answering": "Homey kan se din FP2, men den svarer ikke lige nu. Hvis du lige har genstartet eller nulstillet den, så vent et par minutter og prøv igen."
   }
 }
