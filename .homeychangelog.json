@@ -18,5 +18,9 @@
   "2.0.1": {
     "en": "Fixed: an FP2 could be added without entering the HomeKit code. Old entries left over after an FP2 reset are hidden when pairing. Clearer messages.",
     "da": "Rettet: en FP2 kunne tilføjes uden HomeKit-koden. Gamle poster efter en nulstilling af FP2 skjules ved parring. Tydeligere beskeder."
+  },
+  "2.0.2": {
+    "en": "Clear messages when no FP2 is found or answering. Zones drawn in the Aqara app after pairing now show up when adding FP2 Zone devices.",
+    "da": "Tydelige beskeder, når ingen FP2 findes eller svarer. Zoner tegnet i Aqara-appen efter parringen vises nu, når man tilføjer FP2-zone-enheder."
   }
 }
