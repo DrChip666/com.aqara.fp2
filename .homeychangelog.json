@@ -26,5 +26,9 @@
   "2.1.0": {
     "en": "Diagnostics log in the app settings: copy it or send it by e-mail if something does not work.",
     "da": "Diagnoselog i appens indstillinger: kopiér den eller send den på e-mail, hvis noget ikke virker."
+  },
+  "2.1.1": {
+    "en": "The diagnostics log can now only be copied, not sent by e-mail from the app.",
+    "da": "Diagnoseloggen kan nu kun kopieres, ikke sendes på e-mail fra appen."
   }
 }

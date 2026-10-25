@@ -20,15 +20,12 @@
   "settings": {
     "diag": {
       "title": "Diagnoselog",
-      "intro": "Viser, hvad appen gjorde, da den søgte efter, parrede med og forbandt til din FP2. Send den til udvikleren, hvis noget ikke virker.",
+      "intro": "Viser, hvad appen gjorde, da den søgte efter, parrede med og forbandt til din FP2. Hvis noget ikke virker, så kopiér loggen og indsæt den i en besked til udvikleren.",
       "empty": "Loggen er tom. Prøv at parre din FP2 igen, og kom så tilbage hertil.",
-      "email": "Send på e-mail",
       "copy": "Kopiér log",
       "clear": "Ryd log",
       "copied": "Loggen er kopieret. Du kan indsætte den i en e-mail eller besked.",
       "copyManual": "Kopiering er ikke mulig her. Loggen er markeret, så kopiér den manuelt.",
-      "copiedForMail": "Hele loggen er kopieret. Indsæt den i e-mailen, hvis den ser forkortet ud.",
-      "mailIntro": "Hej Morten, her er diagnoseloggen fra min Aqara FP2. Beskriv gerne problemet her:",
       "confirmClear": "Vil du rydde diagnoseloggen?",
       "cleared": "Loggen er ryddet."
     }

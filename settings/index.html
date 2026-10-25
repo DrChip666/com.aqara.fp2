@@ -36,18 +36,11 @@
   <p id="status"></p>
 
   <div class="actions">
-    <button id="email" class="homey-button-primary-full" data-i18n="settings.diag.email"></button>
-    <button id="copy" class="secondary" data-i18n="settings.diag.copy"></button>
+    <button id="copy" class="homey-button-primary-full" data-i18n="settings.diag.copy"></button>
     <button id="clear" class="secondary" data-i18n="settings.diag.clear"></button>
   </div>
 
   <script type="text/javascript">
-    // Recipient for "Send by e-mail".
-    var SUPPORT_EMAIL = 'morten@bech.eu';
-    // Mail apps cut long mailto links, so the body holds only the newest lines.
-    // The full log is copied to the clipboard first, so the user can paste it.
-    var MAIL_BODY_MAX_CHARS = 1500;
-
     function onHomeyReady(Homey) {
       var logEl = document.getElementById('log');
       var statusEl = document.getElementById('status');
@@ -63,15 +56,6 @@
         statusEl.textContent = Homey.__(key);
       }
 
-      function copyText(text) {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          return navigator.clipboard.writeText(text).catch(function () {
-            return fallbackCopy(text);
-          });
-        }
-        return fallbackCopy(text);
-      }
-
       function fallbackCopy(text) {
         var helper = document.createElement('textarea');
         helper.value = text;
@@ -81,6 +65,15 @@
         try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
         document.body.removeChild(helper);
         return ok ? Promise.resolve() : Promise.reject(new Error('copy failed'));
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text).catch(function () {
+            return fallbackCopy(text);
+          });
+        }
+        return fallbackCopy(text);
       }
 
       Homey.get('diagLog', function (err, value) {
@@ -105,26 +98,6 @@
             logEl.select();
             showStatus('settings.diag.copyManual');
           });
-      });
-
-      document.getElementById('email').addEventListener('click', function () {
-        var full = lines.join('\n');
-        var tail = full.length > MAIL_BODY_MAX_CHARS
-          ? '...\n' + full.slice(full.length - MAIL_BODY_MAX_CHARS)
-          : full;
-        var body = Homey.__('settings.diag.mailIntro') + '\n\n' + tail;
-        var subject = 'Aqara FP2 - Solo diagnostics log';
-
-        function openMail() {
-          Homey.openURL('mailto:' + SUPPORT_EMAIL
-            + '?subject=' + encodeURIComponent(subject)
-            + '&body=' + encodeURIComponent(body));
-        }
-
-        copyText(full)
-          .then(function () { showStatus('settings.diag.copiedForMail'); })
-          .catch(function () {})
-          .then(openMail);
       });
 
       document.getElementById('clear').addEventListener('click', function () {

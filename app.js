@@ -11,7 +11,7 @@ class AqaraFp2App extends Homey.App {
 
   async onInit() {
     this.hubs = new Map();
-    // Diagnostics log the user can read, copy and e-mail from the app settings page.
+    // Diagnostics log the user can read and copy from the app settings page.
     this.diag = new DiagLog(this.homey);
     this.log('Aqara FP2 app started');
     this.diag.header();

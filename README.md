@@ -8,7 +8,7 @@ Homey Pro app for the Aqara FP2 mmWave presence sensor. It connects locally over
 - **FP2 Zone** (driver `fp2_zone`): every zone set up in the Aqara Home app can be added as its own device, renamed, placed in its own room and used with Homey's built-in Flow cards. No code needed; zones added later in the Aqara app show up when you add FP2 Zone devices again.
 - One shared HomeKit connection per FP2 (`lib/Fp2Hub.js`), with automatic discovery, reconnect and repair from any device
 - Deleting the last device of an FP2 releases its HomeKit pairing, so it can be added again without a reset
-- Diagnostics log in the app settings (`lib/DiagLog.js`, `settings/index.html`): the last 300 events from discovery, pairing and the connection, with socket error codes. Users can copy it or send it by e-mail
+- Diagnostics log in the app settings (`lib/DiagLog.js`, `settings/index.html`): the last 300 events from discovery, pairing and the connection, with socket error codes. Users can copy it and paste it into a message
 
 ## Requirements
 

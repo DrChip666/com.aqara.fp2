@@ -20,15 +20,12 @@
   "settings": {
     "diag": {
       "title": "Diagnostics log",
-      "intro": "Shows what the app did when it searched for, paired with and connected to your FP2. Send it to the developer if something does not work.",
+      "intro": "Shows what the app did when it searched for, paired with and connected to your FP2. If something does not work, copy the log and paste it into a message to the developer.",
       "empty": "The log is empty. Try pairing your FP2 again, then come back here.",
-      "email": "Send by e-mail",
       "copy": "Copy log",
       "clear": "Clear log",
       "copied": "The log has been copied. You can paste it into an e-mail or message.",
       "copyManual": "Copying is not possible here. The log is selected, so copy it manually.",
-      "copiedForMail": "The full log has been copied. Paste it into the e-mail if it looks shortened.",
-      "mailIntro": "Hi Morten, here is the diagnostics log from my Aqara FP2. Please describe the problem here:",
       "confirmClear": "Clear the diagnostics log?",
       "cleared": "The log has been cleared."
     }
