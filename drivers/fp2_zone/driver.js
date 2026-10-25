@@ -13,6 +13,7 @@ class Fp2ZoneDriver extends Fp2DriverBase {
     const results = Object.values(this.getDiscoveryStrategy().getDiscoveryResults());
     const paired = results.filter((result) => this.homey.app.getKeys(result.id));
     this.log(`Zone list: ${paired.length} paired FP2(s) on the network`);
+    this.homey.app.diag.add('zones', 'Zone list requested', { pairedOnNetwork: paired.length, onNetwork: results.length });
     if (paired.length === 0) throw new Error(this.homey.__('error.add_fp2_first'));
 
     const devices = [];
@@ -27,6 +28,9 @@ class Fp2ZoneDriver extends Fp2DriverBase {
         state = await hub.refresh();
       } catch (err) {
         this.error(`Could not read zones of ${id}:`, err.message);
+        this.homey.app.diag.error('zones', 'Could not read zones', err.cause || err, {
+          id, address: result.address, port: result.port, result: err.i18nKey,
+        });
         continue; // other FP2s can still be listed
       }
 

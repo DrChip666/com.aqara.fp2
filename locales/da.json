@@ -16,5 +16,21 @@
     "no_keys": "Denne FP2 blev tilføjet uden en gennemført parring. Brug Reparer på enheden og indtast HomeKit-koden, eller slet den og tilføj den igen.",
     "none_found": "Ingen FP2 fundet på netværket. Tjek at FP2 er online i Aqara Home-appen og på samme netværk som Homey. En genstart af Homey kan også hjælpe.",
     "none_answering": "Homey kan se din FP2, men den svarer ikke lige nu. Hvis du lige har genstartet eller nulstillet den, så vent et par minutter og prøv igen."
+  },
+  "settings": {
+    "diag": {
+      "title": "Diagnoselog",
+      "intro": "Viser, hvad appen gjorde, da den søgte efter, parrede med og forbandt til din FP2. Send den til udvikleren, hvis noget ikke virker.",
+      "empty": "Loggen er tom. Prøv at parre din FP2 igen, og kom så tilbage hertil.",
+      "email": "Send på e-mail",
+      "copy": "Kopiér log",
+      "clear": "Ryd log",
+      "copied": "Loggen er kopieret. Du kan indsætte den i en e-mail eller besked.",
+      "copyManual": "Kopiering er ikke mulig her. Loggen er markeret, så kopiér den manuelt.",
+      "copiedForMail": "Hele loggen er kopieret. Indsæt den i e-mailen, hvis den ser forkortet ud.",
+      "mailIntro": "Hej Morten, her er diagnoseloggen fra min Aqara FP2. Beskriv gerne problemet her:",
+      "confirmClear": "Vil du rydde diagnoseloggen?",
+      "cleared": "Loggen er ryddet."
+    }
   }
 }

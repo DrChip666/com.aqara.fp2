@@ -22,5 +22,9 @@
   "2.0.2": {
     "en": "Clear messages when no FP2 is found or answering. Zones drawn in the Aqara app after pairing now show up when adding FP2 Zone devices.",
     "da": "Tydelige beskeder, når ingen FP2 findes eller svarer. Zoner tegnet i Aqara-appen efter parringen vises nu, når man tilføjer FP2-zone-enheder."
+  },
+  "2.1.0": {
+    "en": "Diagnostics log in the app settings: copy it or send it by e-mail if something does not work.",
+    "da": "Diagnoselog i appens indstillinger: kopiér den eller send den på e-mail, hvis noget ikke virker."
   }
 }

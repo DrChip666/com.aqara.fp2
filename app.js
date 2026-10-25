@@ -2,6 +2,7 @@
 
 const Homey = require('homey');
 const Fp2Hub = require('./lib/Fp2Hub');
+const DiagLog = require('./lib/DiagLog');
 
 const KEYS_PREFIX = 'keys:';
 const LEGACY_PENDING_PREFIX = 'pendingPairing:';
@@ -10,7 +11,10 @@ class AqaraFp2App extends Homey.App {
 
   async onInit() {
     this.hubs = new Map();
+    // Diagnostics log the user can read, copy and e-mail from the app settings page.
+    this.diag = new DiagLog(this.homey);
     this.log('Aqara FP2 app started');
+    this.diag.header();
   }
 
   /** The shared connection for one FP2, created on first use. */
