@@ -20,7 +20,7 @@ class Fp2ZoneDriver extends Fp2DriverBase {
     for (const result of paired) {
       const { id } = result;
       const hub = this.homey.app.getHub(id);
-      hub.setTarget(result.address, result.port);
+      hub.setTarget(result.address, result.port, result.fullname);
 
       let state;
       try {

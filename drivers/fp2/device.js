@@ -80,7 +80,7 @@ class Fp2Device extends Homey.Device {
   }
 
   async onDiscoveryAvailable(result) {
-    this.hub.setTarget(result.address, result.port);
+    this.hub.setTarget(result.address, result.port, result.fullname);
     try {
       const state = await this.hub.ensureConnected();
       this._onConnected(state);
@@ -97,11 +97,11 @@ class Fp2Device extends Homey.Device {
   }
 
   onDiscoveryAddressChanged(result) {
-    this.hub.setTarget(result.address, result.port);
+    this.hub.setTarget(result.address, result.port, result.fullname);
   }
 
   onDiscoveryLastSeenChanged(result) {
-    this.hub.setTarget(result.address, result.port);
+    this.hub.setTarget(result.address, result.port, result.fullname);
     if (!this.hub.connected) this.hub.ensureConnected().catch(() => {});
   }
 

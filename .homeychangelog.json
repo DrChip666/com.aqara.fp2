@@ -34,5 +34,9 @@
   "2.1.2": {
     "en": "Devices reconnect by themselves after a failed start or when the FP2 gets a new network port.",
     "da": "Enhederne genopretter selv forbindelsen efter en mislykket start, eller når FP2 får en ny netværksport."
+  },
+  "2.1.3": {
+    "en": "The app now finds the FP2 by itself after the FP2 restarts and gets a new network port.",
+    "da": "Appen finder nu selv FP2, når den er genstartet og har fået en ny netværksport."
   }
 }
